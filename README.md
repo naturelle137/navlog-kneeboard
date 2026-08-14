@@ -162,14 +162,24 @@ scribbled into the margins of real flights:
 Column order and the top/bottom split of every existing field are unchanged, so
 the form still reads the way it always did.
 
+## Contact
+
+Questions, bug reports, or a tweak that would make this fit your own kneeboard
+better — please [open an issue](../../issues) or a pull request here on GitHub.
+
 ## Licence
 
 [![CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-Licensed under [Creative Commons Attribution-ShareAlike 4.0
+© Carsten Ritter. Licensed under [Creative Commons Attribution-ShareAlike 4.0
 International](https://creativecommons.org/licenses/by-sa/4.0/). Use it, print
-it, change it, publish your changes — just credit the original and keep the same
-licence. Full text in [`LICENSE`](LICENSE).
+it, change it, publish your changes — just keep the same licence and credit the
+original:
+
+> *VFR Nav Log — Kneeboard Template* by Carsten Ritter, licensed under
+> [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+
+Full text in [`LICENSE`](LICENSE).
 
 ## Not a legal document
 

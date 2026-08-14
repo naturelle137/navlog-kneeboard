@@ -5,6 +5,7 @@ Paper forms fail silently: a column that is 2 mm too wide still renders, it
 just does not line up after cutting. These assertions pin the numbers the
 README promises.
 
+SPDX-FileCopyrightText: Carsten Ritter
 SPDX-License-Identifier: CC-BY-SA-4.0
 """
 

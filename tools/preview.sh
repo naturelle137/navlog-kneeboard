@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Regenerate the README preview images from the built PDF.
+# SPDX-FileCopyrightText: Carsten Ritter
 # SPDX-License-Identifier: CC-BY-SA-4.0
 set -euo pipefail
 
