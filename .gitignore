@@ -1,0 +1,10 @@
+# The built PDFs and the generated HTML are committed on purpose: most people
+# want to print the form, not install a toolchain. Nothing else from build/.
+build/*
+!build/navlog.html
+!build/NavLog-A4-3up.pdf
+!build/NavLog-A4-3up-longedge.pdf
+
+__pycache__/
+*.pyc
+.venv/

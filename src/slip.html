@@ -1,0 +1,105 @@
+<!--
+  One kneeboard slip. This is the single source of truth for the form —
+  tools/build.py stamps it out three times per page, two pages (front/back).
+
+  The <!-- REPEAT:WP --> ... <!-- /REPEAT:WP --> block is emitted once per
+  waypoint (count set in tools/build.py).
+-->
+<section class="slip">
+
+  <!-- Clamp zone. The KB-1 mini clamp covers roughly this strip, so nothing
+       here is meant to be written or read in flight. -->
+  <div class="clamp">
+    <div class="route">
+      <span class="lab">FROM</span><span class="box icao"></span>
+      <span class="hint">RWY</span><span class="box rwy"></span>
+      <span class="lab">TO</span><span class="box icao"></span>
+      <span class="hint">RWY</span><span class="box rwy"></span>
+    </div>
+    <div class="ident">
+      <span class="lab">DATE</span><span class="fill"></span>
+      <span class="lab">A/C</span><span class="fill"></span>
+      <span class="topmark">&#9650; TOP</span>
+    </div>
+  </div>
+
+  <!-- First block clear of the clamp: the values you actually write in the
+       cockpit. QNH is the last two digits; the circle takes the ATIS letter. -->
+  <div class="info">
+    <div class="row">
+      <span class="lab">T/O</span><span class="box time"></span>
+      <span class="lab">LDG</span><span class="box time"></span>
+    </div>
+    <div class="qnh">
+      <span class="hint">QNH / INFO</span>
+      <span class="grp">
+        <span class="lab">DEP</span><span class="lab">Q</span>
+        <span class="box q"></span><span class="circ"></span>
+      </span>
+      <span class="grp">
+        <span class="lab">DEST</span><span class="lab">Q</span>
+        <span class="box q"></span><span class="circ"></span>
+      </span>
+    </div>
+  </div>
+
+  <div class="freqs">
+    <div class="frow">
+      <span class="lab">DEP</span><span class="fill"></span>
+      <span class="lab">DEST</span><span class="fill"></span>
+    </div>
+    <div class="fline"></div>
+    <div class="fline"></div>
+    <div class="fline"></div>
+  </div>
+
+  <table class="nav">
+    <colgroup>
+      <col class="c-class" /><col class="c-alt" /><col class="c-palt" />
+      <col class="c-crs" /><col class="c-gs" /><col class="c-time" />
+      <col class="c-fuel" /><col class="c-eto" />
+    </colgroup>
+    <thead>
+      <tr>
+        <th rowspan="2">CL</th>
+        <th class="sp">MAX ALT</th>
+        <th rowspan="2">ALT</th>
+        <th class="sp">MC</th>
+        <th class="sp">GS</th>
+        <th class="sp">LEG</th>
+        <th class="sp">MIN FUEL</th>
+        <th class="sp">ETO</th>
+      </tr>
+      <tr>
+        <th class="sp2">MIN ALT</th>
+        <th class="sp2">MH</th>
+        <th class="sp2">DIST</th>
+        <th class="sp2">TOTAL</th>
+        <th class="sp2">ACT. FUEL</th>
+        <th class="sp2">ATO</th>
+      </tr>
+    </thead>
+    <tbody>
+<!-- REPEAT:WP -->
+      <tr class="wp">
+        <td class="name" colspan="6"><span class="hint">WAYPOINT</span></td>
+        <td class="wv" colspan="2"><span class="hint">W/V</span></td>
+      </tr>
+      <tr class="data upper">
+        <td class="cls"></td><td></td><td class="span" rowspan="2"></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+      <tr class="data lower">
+        <td class="cls"></td><td></td>
+        <td></td><td></td><td></td><td></td><td></td>
+      </tr>
+<!-- /REPEAT:WP -->
+    </tbody>
+  </table>
+
+  <div class="notes">
+    <div class="nline"></div>
+    <div class="nline"></div>
+  </div>
+
+</section>

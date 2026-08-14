@@ -1,0 +1,377 @@
+/*
+ * VFR nav log — kneeboard slip, 3-up on landscape A4.
+ * SPDX-License-Identifier: CC-BY-SA-4.0
+ *
+ * All geometry lives in the :root block below. Everything else is derived
+ * from it, so retuning the form is a matter of changing numbers here and
+ * re-running `make`. The notes block at the bottom of the slip absorbs any
+ * leftover height, so changing a block above it never cascades.
+ */
+
+:root {
+  /* --- outer geometry -------------------------------------------------- */
+  --slip-w: 93mm;          /* cut width of one slip                        */
+  --slip-h: 185mm;         /* cut height of one slip                       */
+  --gutter: 4mm;           /* white space between slips (cut here)         */
+
+  /* --- vertical budget, top to bottom ---------------------------------- */
+  --h-clamp: 18mm;         /* sits under the kneeboard clamp: read-only    */
+  --h-info: 12mm;          /* first block you can actually write on        */
+  --h-freq: 20mm;
+  --h-thead: 7mm;
+  --h-wprow: 4.6mm;        /* waypoint name / free notes row               */
+  --h-datarow: 6.2mm;      /* one of the two data rows per waypoint        */
+  --notes-pitch: 5mm;      /* ruling of the bottom notes block             */
+
+  /* --- table columns, must add up to --slip-w -------------------------- */
+  --c-class: 5mm;          /* boxed airspace class letter                  */
+  --c-alt: 13mm;           /* MAX ALT / MIN ALT                            */
+  --c-palt: 9mm;           /* planned ALT                                  */
+  --c-crs: 12mm;           /* MC / MH                                      */
+  --c-gs: 12mm;            /* GS / DIST                                    */
+  --c-time: 12mm;          /* LEG / TOTAL                                  */
+  --c-fuel: 14mm;          /* MIN FUEL / ACT. FUEL                         */
+  --c-eto: 16mm;           /* ETO / ATO                                    */
+
+  /* --- ink ------------------------------------------------------------- */
+  --rule: 0.25mm;
+  --rule-strong: 0.4mm;
+  --ink: #000;
+  --faint: #7a7a7a;        /* printed hints you write over                 */
+
+  --f-label: 5pt;          /* field labels                                 */
+  --f-head: 6pt;           /* table column headings                        */
+  --f-route: 10pt;         /* FROM / TO line                               */
+}
+
+@page {
+  size: A4 landscape;
+  /* 297 = 5 + 93 + 4 + 93 + 4 + 93 + 5, so the cut lines are mirror
+     symmetric and register whichever edge the printer flips on.
+     210 = 12.5 + 185 + 12.5, symmetric for the same reason. */
+  margin: 12.5mm 5mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Liberation Sans", Arial, Helvetica, sans-serif;
+  font-size: var(--f-label);
+  line-height: 1;
+  color: var(--ink);
+  hyphens: none;
+}
+
+body {
+  margin: 0;
+}
+
+.sheet {
+  display: flex;
+  gap: var(--gutter);
+  height: var(--slip-h);
+  page-break-after: always;
+}
+
+.sheet:last-child {
+  page-break-after: auto;
+}
+
+/* ---------------------------------------------------------------- slip -- */
+
+.slip {
+  width: var(--slip-w);
+  height: var(--slip-h);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* The cut guide. Drawn as an out-of-flow frame rather than a border on .slip
+   itself, because a border would eat 0.5 mm of content width and the nav
+   table's fixed column widths would then overhang the cut line. WeasyPrint
+   does not paint `outline`, so this is the way to get a zero-width frame. */
+.slip::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border: var(--rule) solid var(--ink);
+}
+
+/* Generic bits -------------------------------------------------------- */
+
+.lab {
+  font-size: var(--f-label);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.hint {
+  font-size: var(--f-label);
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* display:block is load-bearing: WeasyPrint draws a phantom border box for an
+   empty inline <span> that a flex container has blockified, which shows up as
+   a black stub inside the top-left corner of every field. */
+
+/* An open write-on field: a rule you write above. */
+.fill {
+  display: block;
+  flex: 1;
+  border-bottom: var(--rule) solid var(--ink);
+  min-width: 6mm;
+  align-self: stretch;
+  margin-bottom: 0.6mm;
+}
+
+/* A closed write-on field: a boxed cell. */
+.box {
+  display: block;
+  border: var(--rule) solid var(--ink);
+  height: 4.6mm;
+  flex: none;
+}
+
+.circ {
+  display: block;
+  border: var(--rule) solid var(--ink);
+  border-radius: 50%;
+  width: 4.6mm;
+  height: 4.6mm;
+  flex: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1mm;
+}
+
+/* --- clamp zone ------------------------------------------------------- */
+/* Everything here is filled on the ground and only glanced at in the air,
+   because the KB-1 mini clamp covers roughly this strip. */
+
+.clamp {
+  height: var(--h-clamp);
+  flex: none;
+  border-bottom: var(--rule-strong) solid var(--ink);
+  padding: 1mm 1.5mm 0.8mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 1.5mm;
+}
+
+/* Duplex sanity check: if this ends up at the bottom of a slip, the printer
+   flipped on the wrong edge and the backs are upside down. */
+.topmark {
+  font-size: 4pt;
+  color: var(--faint);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  margin-left: 1mm;
+}
+
+/* align-items must not be `baseline`: the runway boxes are empty blocks with
+   no baseline of their own and get shoved to the bottom of the slip. */
+.route {
+  display: flex;
+  align-items: center;
+  gap: 1mm;
+  font-size: var(--f-route);
+}
+
+.route .lab {
+  font-size: var(--f-label);
+}
+
+/* Boxes, not rules: FROM/TO/RWY are short codes, and a box is easier to aim
+   at than a line when the board is on your knee. */
+.route .box.icao {
+  flex: 1;
+  min-width: 14mm;
+  height: 5.4mm;
+}
+
+.route .box.rwy {
+  width: 12mm;
+  height: 5.4mm;
+}
+
+.ident {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.5mm;
+}
+
+/* --- info bar --------------------------------------------------------- */
+/* First block clear of the clamp, so T/O, LDG, QNH and the ATIS letter are
+   easy to write and easy to read in flight. */
+
+.info {
+  height: var(--h-info);
+  flex: none;
+  border-bottom: var(--rule-strong) solid var(--ink);
+  padding: 0.8mm 1.5mm;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.info .box.time {
+  width: 20mm;
+}
+
+.info .spacer {
+  flex: 1;
+}
+
+.qnh {
+  display: flex;
+  align-items: center;
+  gap: 1mm;
+}
+
+.qnh .grp {
+  display: flex;
+  align-items: center;
+  gap: 0.8mm;
+}
+
+.qnh .grp + .grp {
+  margin-left: 2.5mm;
+}
+
+.qnh .box.q {
+  width: 9mm;
+}
+
+/* --- frequencies ------------------------------------------------------ */
+
+.freqs {
+  height: var(--h-freq);
+  flex: none;
+  border-bottom: var(--rule-strong) solid var(--ink);
+  padding: 0 1.5mm;
+  display: flex;
+  flex-direction: column;
+}
+
+.freqs .frow {
+  display: flex;
+  align-items: center;
+  gap: 1mm;
+  height: 5mm;
+  flex: none;
+}
+
+.freqs .fline {
+  flex: 1;
+  border-bottom: var(--rule) solid var(--faint);
+}
+
+.freqs .fline:last-child {
+  border-bottom: none;
+}
+
+/* --- nav table -------------------------------------------------------- */
+
+table.nav {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  flex: none;
+  /* Collapsed borders straddle the column edges, so the table box is half a
+     rule wider than the columns on each side. Pull it back by that much and
+     the outer table rule sits centred on the cut line instead of beside it. */
+  margin: 0 calc(var(--rule) / -2);
+}
+
+table.nav th,
+table.nav td {
+  border: var(--rule) solid var(--ink);
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+col.c-class { width: var(--c-class); }
+col.c-alt   { width: var(--c-alt); }
+col.c-palt  { width: var(--c-palt); }
+col.c-crs   { width: var(--c-crs); }
+col.c-gs    { width: var(--c-gs); }
+col.c-time  { width: var(--c-time); }
+col.c-fuel  { width: var(--c-fuel); }
+col.c-eto   { width: var(--c-eto); }
+
+table.nav thead th {
+  font-size: var(--f-head);
+  font-weight: normal;
+  height: calc(var(--h-thead) / 2);
+  line-height: 1;
+}
+
+/* Headings that split into an upper and a lower half share one cell box. */
+table.nav thead th.sp  { border-bottom: none; }
+table.nav thead th.sp2 { border-top: none; }
+
+/* The waypoint row: free text plus a slot for the SkyDemon wind. */
+tr.wp td {
+  height: var(--h-wprow);
+  border-top: var(--rule-strong) solid var(--ink);
+  border-left: none;
+  border-right: none;
+  text-align: left;
+  padding-left: 1.2mm;
+}
+
+tr.wp td.name {
+  border-right: var(--rule) solid var(--ink);
+}
+
+tr.wp td.wv {
+  border-left: var(--rule) solid var(--ink);
+}
+
+tr.data td {
+  height: var(--h-datarow);
+}
+
+/* The divider between the two halves of a pair is lighter than the rule
+   between waypoints. td.span is the ALT cell, which spans both halves. */
+tr.data.upper td:not(.span) {
+  border-bottom-color: var(--faint);
+}
+
+td.cls {
+  /* deliberately empty: you write C / D / E / R here when it matters */
+}
+
+/* --- notes ------------------------------------------------------------ */
+
+.notes {
+  flex: 1;
+  border-top: var(--rule-strong) solid var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Equal-height lines rather than a fixed pitch, so the leftover height is
+   always divided evenly and the last rule never crowds the slip edge. */
+.notes .nline {
+  flex: 1;
+  border-bottom: var(--rule) solid var(--faint);
+}
+
+.notes .nline:last-child {
+  border-bottom: none;
+}
