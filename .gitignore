@@ -8,3 +8,12 @@ build/*
 __pycache__/
 *.pyc
 .venv/
+
+# Photos of filled-in logs are private flight data — never commit them here.
+# docs/preview-*.png is generated from the PDF, so it is exempt.
+*.jpg
+*.jpeg
+*.heic
+*.JPG
+*.JPEG
+
