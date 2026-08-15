@@ -46,11 +46,14 @@
     </div>
   </div>
 
+  <!-- Frequencies first, then free text: en-route FIS, fuel and mass, squawk,
+       a clearance. This block also absorbs any leftover slip height. -->
   <div class="freqs">
     <div class="frow">
       <span class="lab">DEP</span><span class="fill"></span>
       <span class="lab">DEST</span><span class="fill"></span>
     </div>
+    <div class="fline"></div>
     <div class="fline"></div>
     <div class="fline"></div>
     <div class="fline"></div>
@@ -97,12 +100,14 @@
         <td></td><td></td><td></td><td></td><td></td>
       </tr>
 <!-- /REPEAT:WP -->
+      <!-- The destination: a name and the landing wind, but no data rows —
+           the figures under a waypoint describe the leg departing it, and
+           nothing departs the last one. Row 33 of the v1 sheet did the same. -->
+      <tr class="wp last">
+        <td class="name" colspan="6"><span class="hint">WAYPOINT</span></td>
+        <td class="wv" colspan="2"><span class="hint">W/V</span></td>
+      </tr>
     </tbody>
   </table>
-
-  <div class="notes">
-    <div class="nline"></div>
-    <div class="nline"></div>
-  </div>
 
 </section>

@@ -57,17 +57,20 @@ double-sided nav logs, or one out-and-back per slip.
 │  T/O [        ]   LDG [        ]         │  first block clear
 │  QNH/INFO  DEP Q [  ] ◯   DEST Q [  ] ◯  │  of the clamp
 ├──────────────────────────────────────────┤
-│  DEP _________     DEST _________        │  frequencies
+│  DEP _________     DEST _________        │  frequencies,
+│  ______________________________________  │  then free text:
+│  ______________________________________  │  FIS, fuel, mass,
+│  ______________________________________  │  squawk, clearance
 │  ______________________________________  │
 ├────┬─────┬───┬────┬────┬────┬─────┬──────┤
 │ CL │ MAX │ALT│ MC │ GS │LEG │ MIN │ ETO  │
 │    │ MIN │   │ MH │DIST│TOT │ ACT │ ATO  │
 ├────┴─────┴───┴────┴────┴────┴─────┴──────┤
 │  waypoint / notes              │ W/V     │
-│  ...  7 waypoint blocks  ...             │
+│  ..  7 of these, each over two data rows │
 ├──────────────────────────────────────────┤
-│  notes                                   │
-└──────────────────────────────────────────┘
+│  waypoint                      │ W/V     │  destination:
+└──────────────────────────────────────────┘  no leg data
 ```
 
 | field | what goes in it |
@@ -78,7 +81,7 @@ double-sided nav logs, or one out-and-back per slip.
 | `QNH  Q [ ]` | last two digits — the leading ones are obvious in context |
 | `◯` | the ATIS information letter, circled |
 | `DEP` / `DEST` freq | tower or info frequency at each end |
-| free lines | en-route FIS and any other frequencies |
+| free lines | en-route FIS and any other frequencies — then whatever else the flight needs written down: fuel and mass, squawk, a clearance |
 | `CL` | airspace class letter (C / D / E / R). Optional, but it makes the altitude limits next to it mean something |
 | `MAX ALT` / `MIN ALT` | the airspace band you have to stay inside |
 | `ALT` | planned cruising altitude for the leg |
@@ -89,26 +92,36 @@ double-sided nav logs, or one out-and-back per slip.
 | `ETO` / `ATO` | estimated and actual time overhead. Minutes alone is usually enough |
 | waypoint row | the waypoint, plus whatever the leg needs (`! EDR A15`, `≈ Weser`, `→ Alsfeld`) |
 | `W/V` | wind direction/speed, e.g. from SkyDemon. Optional |
-| notes | fuel and mass, squawk, clearances, anything else |
+| last row | the destination: a name and the landing wind, no data cells |
 
-Seven waypoint blocks. Typical cross-country routes use four to six, so there is
-room to spare without wasting a whole slip on blank grid.
+The figures under a waypoint describe the leg **leaving** it, so the last
+waypoint needs no data cells — the form ends with a bare name row. That gives
+**seven legs and eight waypoints** per slip. Typical cross-country routes use
+four to six, so there is room to spare without wasting a whole slip on blank
+grid.
 
 ## Customise it
 
 Everything dimensional lives in the `:root` block at the top of
 [`src/navlog.css`](src/navlog.css) — slip size, the height of each block, and
-the eight column widths. The notes block at the bottom takes up whatever height
-is left over, so changing any block above it does not cascade into retuning
-everything else.
+the eight column widths. The free-text block under the frequencies takes up
+whatever height is left over, so changing any other block does not cascade into
+retuning everything else, and the table always ends flush with the bottom cut
+line.
 
 A few you might want:
 
 ```css
---slip-h: 185mm;   /* 177mm matches the original spreadsheet version */
---h-clamp: 18mm;   /* grow this if your kneeboard's clamp reaches further */
---c-eto: 16mm;     /* the eight column widths must add up to --slip-w */
+--slip-h: 185mm;     /* 177mm matches the original spreadsheet version */
+--h-clamp: 18mm;     /* grow this if your kneeboard's clamp reaches further */
+--h-freq-min: 20mm;  /* floor for the free-text block, not its actual height */
+--c-eto: 16mm;       /* the eight column widths must add up to --slip-w */
 ```
+
+Waypoint count lives in `WAYPOINTS` in [`tools/build.py`](tools/build.py). Raise
+it and the free-text block shrinks to compensate; raise it past what fits and
+the block hits its floor and `make check` fails, rather than the grid quietly
+sliding off the paper.
 
 If you change a column width, run `make check` — it will tell you if the columns
 no longer add up and the grid has drifted off the cut line.
@@ -133,7 +146,8 @@ the more reliable route.
 
 `make check` asserts what this README promises: two A4 landscape pages, three
 93 × 185 mm slips each, 97 mm pitch, symmetric margins, nothing overhanging a
-cut line, seven waypoint blocks per slip. Paper forms fail quietly — a column
+cut line, seven legs and eight waypoint rows per slip, and the table ending
+flush with the bottom cut line. Paper forms fail quietly — a column
 2 mm too wide still renders, it just stops lining up — so the numbers are pinned
 in code rather than in prose alone.
 
@@ -152,10 +166,16 @@ scribbled into the margins of real flights:
 - **Airspace class** got a narrow `CL` box, instead of drawing one by hand
   around the letter each time.
 - **`TIME` split** into `LEG` and `TOTAL`.
-- **Notes lines** at the bottom, for the fuel and mass figures that used to go
-  wherever there was space.
-- Seven waypoint blocks, all of them complete — the old sheet's eighth
-  `WAYPOINT:` label was orphaned by the page break with no data rows under it.
+- **A fifth free line** under the frequencies. The old sheet had five 6.35 mm
+  rows there; an early draft of this version cut it to four and put two ruled
+  notes lines at the bottom instead. Both notes lines have been given back: one
+  restored the fifth free line, the other became the destination row below.
+- **The destination row is back.** The old sheet ended page 1 with a bare
+  `WAYPOINT:` at row 33 — deliberately, since the figures under a waypoint
+  describe the leg leaving it and nothing leaves the last one. An early draft of
+  this version mistook that for a page-break accident and dropped it, which cost
+  a whole three-row block to write one airfield name. Seven legs, eight
+  waypoints, as before.
 - Plain-text source: the layout is now diffable and builds reproducibly, instead
   of depending on how Excel or LibreOffice feels about rendering the sheet.
 

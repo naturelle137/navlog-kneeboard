@@ -27,19 +27,21 @@ PAGE_W_MM = 297.0
 PAGE_H_MM = 210.0
 SLIPS_PER_PAGE = 3
 PAGES = 2
-WAYPOINTS = 7
+WAYPOINT_BLOCKS = 7  # name row + two data rows: one leg each
+WP_ROWS = 8  # those, plus the name-only destination row at the end
 
 TOL_MM = 0.15
 
 failures: list[str] = []
 
 
-def check(condition: bool, message: str) -> None:
+def check(condition: bool, message: str) -> bool:
     if condition:
         print(f"  ok    {message}")
     else:
         print(f"  FAIL  {message}")
         failures.append(message)
+    return condition
 
 
 def close(a: float, b: float, tol: float = TOL_MM) -> bool:
@@ -58,6 +60,18 @@ def slips_of(page) -> list:
         if box.element is not None
         and "slip" in (box.element.get("class") or "").split()
         and box.element_tag == "section"
+    ]
+
+
+def rows_of(slip, *classes: str) -> list:
+    """Every <tr> in a slip carrying all of the given classes."""
+    wanted = set(classes)
+    return [
+        box
+        for box in slip.descendants()
+        if box.element is not None
+        and box.element_tag == "tr"
+        and wanted <= set((box.element.get("class") or "").split())
     ]
 
 
@@ -150,17 +164,34 @@ def main() -> None:
     print("form contents")
     for number, page in enumerate(document.pages, 1):
         for index, slip in enumerate(slips_of(page)):
-            rows = [
-                box
-                for box in slip.descendants()
-                if box.element is not None
-                and "wp" in (box.element.get("class") or "").split()
-                and box.element.tag == "tr"
-            ]
+            where = f"page {number} slip {index + 1}"
+
+            # Two counts, not one: the destination row is a name row with no
+            # data rows under it, and that asymmetry is the point.
+            names = rows_of(slip, "wp")
+            legs = rows_of(slip, "data", "upper")
+            check(len(names) == WP_ROWS, f"{where} has {WP_ROWS} waypoint name rows")
             check(
-                len(rows) == WAYPOINTS,
-                f"page {number} slip {index + 1} has {WAYPOINTS} waypoint blocks",
+                len(legs) == WAYPOINT_BLOCKS,
+                f"{where} has {WAYPOINT_BLOCKS} legs "
+                f"(the last waypoint carries no data rows)",
             )
+
+            # The free-text block absorbs leftover height, so the table must end
+            # exactly on the bottom cut line. If it does not, that block hit its
+            # min-height and the vertical budget no longer adds up.
+            last = rows_of(slip, "wp", "last")
+            if check(len(last) == 1, f"{where} has one destination row"):
+                gap = (
+                    slip.border_box_y()
+                    + slip.border_height()
+                    - (last[0].border_box_y() + last[0].border_height())
+                ) / PX_PER_MM
+                check(
+                    close(gap, 0.0),
+                    f"{where}: table ends flush with the bottom cut line "
+                    f"({gap:.2f} mm short)",
+                )
 
     print()
     if failures:

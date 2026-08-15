@@ -5,8 +5,9 @@
  *
  * All geometry lives in the :root block below. Everything else is derived
  * from it, so retuning the form is a matter of changing numbers here and
- * re-running `make`. The notes block at the bottom of the slip absorbs any
- * leftover height, so changing a block above it never cascades.
+ * re-running `make`. The free-text block under the frequencies absorbs any
+ * leftover height, so changing another block never cascades — and the nav
+ * table always ends flush with the bottom cut line.
  */
 
 :root {
@@ -18,11 +19,10 @@
   /* --- vertical budget, top to bottom ---------------------------------- */
   --h-clamp: 18mm;         /* sits under the kneeboard clamp: read-only    */
   --h-info: 12mm;          /* first block you can actually write on        */
-  --h-freq: 20mm;
+  --h-freq-min: 20mm;      /* floor only — this block absorbs leftover     */
   --h-thead: 7mm;
   --h-wprow: 4.6mm;        /* waypoint name / free notes row               */
   --h-datarow: 6.2mm;      /* one of the two data rows per waypoint        */
-  --notes-pitch: 5mm;      /* ruling of the bottom notes block             */
 
   /* --- table columns, must add up to --slip-w -------------------------- */
   --c-class: 5mm;          /* boxed airspace class letter                  */
@@ -256,11 +256,18 @@ body {
   width: 9mm;
 }
 
-/* --- frequencies ------------------------------------------------------ */
+/* --- frequencies and free text ---------------------------------------- */
+/* Doubles as the notes area: frequencies first, then whatever else the flight
+   needs written down (fuel and mass, squawk, a clearance).
+
+   This is the block that absorbs leftover slip height, so the nav table below
+   always ends flush with the bottom cut line. min-height rather than height:
+   if the waypoint count is ever raised past what fits, the block refuses to
+   collapse and `make check` fails loudly instead of overflowing quietly. */
 
 .freqs {
-  height: var(--h-freq);
-  flex: none;
+  flex: 1;
+  min-height: var(--h-freq-min);
   border-bottom: var(--rule-strong) solid var(--ink);
   padding: 0 1.5mm;
   display: flex;
@@ -343,6 +350,13 @@ tr.wp td.wv {
   border-left: var(--rule) solid var(--ink);
 }
 
+/* The destination row closes the table flush against the bottom cut line, so
+   its own bottom rule would print immediately inside the .slip::before frame
+   and read as one doubled line. Let the frame be the bottom edge. */
+tr.wp.last td {
+  border-bottom: none;
+}
+
 tr.data td {
   height: var(--h-datarow);
 }
@@ -355,24 +369,4 @@ tr.data.upper td:not(.span) {
 
 td.cls {
   /* deliberately empty: you write C / D / E / R here when it matters */
-}
-
-/* --- notes ------------------------------------------------------------ */
-
-.notes {
-  flex: 1;
-  border-top: var(--rule-strong) solid var(--ink);
-  display: flex;
-  flex-direction: column;
-}
-
-/* Equal-height lines rather than a fixed pitch, so the leftover height is
-   always divided evenly and the last rule never crowds the slip edge. */
-.notes .nline {
-  flex: 1;
-  border-bottom: var(--rule) solid var(--faint);
-}
-
-.notes .nline:last-child {
-  border-bottom: none;
 }
