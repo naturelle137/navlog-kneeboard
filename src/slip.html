@@ -9,20 +9,45 @@
 -->
 <section class="slip">
 
-  <!-- Clamp zone. The KB-1 mini clamp covers roughly this strip, so nothing
-       here is meant to be written or read in flight. -->
+  <!-- Clamp zone, laid out around the clamp's wire handle rather than under
+       it. The handle is a flat loop lying on the sheet: an upper bar along the
+       top edge, a lower bar 15.5-20 mm down, and two side rails joining them
+       at roughly 14-20 mm and 77-81 mm from the left edge.
+
+       So the header is three columns. FROM / TO / RWY go in the middle, seen
+       through the loop's open window; A/C and DATE go in the strips outside
+       the rails, which no part of the handle ever crosses. The strip below
+       the content is left blank because that is where the lower bar lands.
+
+       Nothing here is meant to be written or read in flight. -->
   <div class="clamp">
-    <div class="route">
-      <span class="lab">FROM</span><span class="box icao"></span>
-      <span class="hint">RWY</span><span class="box rwy"></span>
-      <span class="lab">TO</span><span class="box icao"></span>
-      <span class="hint">RWY</span><span class="box rwy"></span>
+    <div class="hdr">
+      <div class="col side">
+        <span class="lab">A/C</span>
+        <span class="box"></span>
+      </div>
+
+      <div class="col mid">
+        <div class="rte">
+          <span class="lab from">FROM</span><span class="box icao"></span>
+          <span class="hint">RWY</span><span class="box rwy"></span>
+        </div>
+        <div class="rte">
+          <span class="lab from">TO</span><span class="box icao"></span>
+          <span class="hint">RWY</span><span class="box rwy"></span>
+        </div>
+      </div>
+
+      <div class="col side">
+        <span class="lab">DATE</span>
+        <span class="box"></span>
+      </div>
     </div>
-    <div class="ident">
-      <span class="lab">DATE</span><span class="fill"></span>
-      <span class="lab">A/C</span><span class="fill"></span>
-      <span class="topmark">&#9650; TOP</span>
-    </div>
+
+    <!-- Bottom right of the blank strip: outside the right-hand rail, so the
+         handle never covers it. VARIANT is stamped in by tools/build.py, so a
+         slip that has been cut off the sheet still says which grid it carries. -->
+    <span class="topmark">&#9650; TOP VARIANT</span>
   </div>
 
   <!-- First block clear of the clamp: the values you actually write in the

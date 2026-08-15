@@ -12,16 +12,44 @@
 :root {
   /* --- outer geometry -------------------------------------------------- */
   --slip-w: 93mm;          /* cut width of one slip                        */
-  --slip-h: 185mm;         /* cut height of one slip                       */
+  --slip-h: 175mm;         /* cut height of one slip                       */
   --gutter: 4mm;           /* white space between slips (cut here)         */
 
   /* --- vertical budget, top to bottom ---------------------------------- */
-  --h-clamp: 18mm;         /* sits under the kneeboard clamp: read-only    */
+  /* --h-clamp is set by the clamp hardware, not by taste: see the wire
+     geometry below. The block is tall enough to push the first write-on
+     field clear of the handle's lower bar. */
+  --h-clamp: 21mm;         /* sits under the kneeboard clamp: read-only    */
   --h-info: 12mm;          /* first block you can actually write on        */
   --h-freq-min: 20mm;      /* floor only — this block absorbs leftover     */
   --h-thead: 7mm;
-  --h-wprow: 4.6mm;        /* waypoint name / free notes row               */
-  --h-datarow: 6.2mm;      /* one of the two data rows per waypoint        */
+  /* The two row heights are the variant knob: tools/build.py overrides them
+     per variant, trading row height against how many legs fit. */
+  --h-wprow: 4.3mm;        /* waypoint name / free notes row               */
+  --h-datarow: 5.6mm;      /* one of the two data rows per waypoint        */
+
+  /* --- the clamp's wire handle ----------------------------------------- */
+  /* Hardware, measured on a KB-1 mini with a rule against the sheet's top
+     edge. The handle is a flat wire loop lying on the paper:
+
+         0 ┌────┬───────────────────────┬────┐   upper bar, along the top edge
+           │    │                       │    │
+           │ A/C│  FROM/TO — the open   │DATE│   side rails at 14-20 mm and
+           │    │  window you can see   │    │   77-81 mm from the left edge
+        15 ├────┼───────────────────────┼────┤
+        20 │    └───────────────────────┘    │   lower bar
+        21 ├────────────────────────────────-┤   first write-on block starts
+
+     Two photos of the same board gave rails at 14.5-17.2 / 77.3-80.0 mm and
+     17.4-20.1 / 78.6-81.2 mm — the sheet sits about 3 mm further left in one
+     than the other, so the gaps below carry that tolerance. Nothing printed
+     may land in the rails or under the lower bar; the strips outside the
+     rails are clear all the way down and hold A/C and DATE. */
+  --w-clamp-side: 10.5mm;  /* outside the rails: clear of the handle       */
+  --w-wire-gap: 8mm;       /* straddles a rail, plus lateral tolerance     */
+  --h-clamp-top: 2.2mm;    /* clear of the upper bar                       */
+  --h-clamp-row: 5mm;      /* one boxed row in the header                  */
+  --h-clamp-gap: 1.2mm;    /* between the FROM and TO rows                 */
 
   /* --- table columns, must add up to --slip-w -------------------------- */
   --c-class: 5mm;          /* boxed airspace class letter                  */
@@ -41,15 +69,14 @@
 
   --f-label: 5pt;          /* field labels                                 */
   --f-head: 6pt;           /* table column headings                        */
-  --f-route: 10pt;         /* FROM / TO line                               */
 }
 
 @page {
   size: A4 landscape;
   /* 297 = 5 + 93 + 4 + 93 + 4 + 93 + 5, so the cut lines are mirror
      symmetric and register whichever edge the printer flips on.
-     210 = 12.5 + 185 + 12.5, symmetric for the same reason. */
-  margin: 12.5mm 5mm;
+     210 = 17.5 + 175 + 17.5, symmetric for the same reason. */
+  margin: 17.5mm 5mm;
 }
 
 * {
@@ -158,59 +185,98 @@ body {
 
 /* --- clamp zone ------------------------------------------------------- */
 /* Everything here is filled on the ground and only glanced at in the air,
-   because the KB-1 mini clamp covers roughly this strip. */
+   because the KB-1 mini clamp holds this strip.
+
+   The block is taller than its contents on purpose. The header packs into the
+   top 13.4 mm and the slack below it is where the handle's lower bar lies
+   flat on the sheet, so it is left blank — nothing is hidden, which is the
+   whole point of the three-column arrangement. */
 
 .clamp {
   height: var(--h-clamp);
   flex: none;
   border-bottom: var(--rule-strong) solid var(--ink);
-  padding: 1mm 1.5mm 0.8mm;
+  padding: var(--h-clamp-top) 1.5mm 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  gap: 1.5mm;
+  justify-content: space-between;
+}
+
+/* The three-column header. Fixed height rather than flex: the content has to
+   finish above the handle's lower bar, and letting it grow into that band is
+   exactly the failure this layout exists to prevent. `make check` pins it. */
+.hdr {
+  flex: none;
+  height: calc(var(--h-clamp-row) * 2 + var(--h-clamp-gap));
+  display: flex;
+  align-items: stretch;
+}
+
+.hdr .col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Outside the rails. The label sits at the top and the box at the bottom, so
+   the box lines up with the TO row across the gap. */
+.hdr .side {
+  width: var(--w-clamp-side);
+  flex: none;
+}
+
+.hdr .side .box {
+  height: var(--h-clamp-row);
+}
+
+/* Inside the loop's open window. */
+.hdr .mid {
+  flex: 1;
+  margin: 0 var(--w-wire-gap);
+}
+
+/* align-items must not be `baseline`: the runway boxes are empty blocks with
+   no baseline of their own and get shoved to the bottom of the slip. */
+.rte {
+  display: flex;
+  align-items: center;
+  gap: 1mm;
+  height: var(--h-clamp-row);
+}
+
+/* A fixed width, so the two rows' boxes line up under each other even though
+   FROM and TO are different lengths. */
+.rte .lab.from {
+  width: 8mm;
+  flex: none;
+}
+
+/* Boxes, not rules: FROM/TO/RWY are short codes, and a box is easier to aim
+   at than a line when the board is on your knee. */
+.rte .box.icao {
+  flex: 1;
+  height: var(--h-clamp-row);
+}
+
+.rte .box.rwy {
+  width: 10mm;
+  height: var(--h-clamp-row);
 }
 
 /* Duplex sanity check: if this ends up at the bottom of a slip, the printer
-   flipped on the wrong edge and the backs are upside down. */
+   flipped on the wrong edge and the backs are upside down.
+
+   align-self, not text-align: the clamp block's space-between drops this into
+   the blank strip beside the handle's lower bar, and only align-self shrinks
+   the box to its text so it sits wholly outside the right-hand rail. Aligning
+   the text inside a full-width box would put the box across both rails —
+   invisible on paper, but `make check` reads boxes, not ink. */
 .topmark {
   font-size: 4pt;
   color: var(--faint);
   letter-spacing: 0.08em;
   white-space: nowrap;
-  margin-left: 1mm;
-}
-
-/* align-items must not be `baseline`: the runway boxes are empty blocks with
-   no baseline of their own and get shoved to the bottom of the slip. */
-.route {
-  display: flex;
-  align-items: center;
-  gap: 1mm;
-  font-size: var(--f-route);
-}
-
-.route .lab {
-  font-size: var(--f-label);
-}
-
-/* Boxes, not rules: FROM/TO/RWY are short codes, and a box is easier to aim
-   at than a line when the board is on your knee. */
-.route .box.icao {
-  flex: 1;
-  min-width: 14mm;
-  height: 5.4mm;
-}
-
-.route .box.rwy {
-  width: 12mm;
-  height: 5.4mm;
-}
-
-.ident {
-  display: flex;
-  align-items: flex-end;
-  gap: 1.5mm;
+  align-self: flex-end;
 }
 
 /* --- info bar --------------------------------------------------------- */

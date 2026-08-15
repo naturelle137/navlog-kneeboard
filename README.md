@@ -1,22 +1,55 @@
 # VFR Nav Log — Kneeboard Template
 
 A compact VFR navigation log that prints **three slips to a landscape A4 sheet**,
-duplex, and cuts into **93 × 185 mm** double-sided slips. Sized for the
-[Design4Pilot KB-1 mini](https://www.design4pilots.de/) kneeboard: the slips fit
-under the clamp, and the spare ones stow under the front flap so they do not
-flap around in a draughty cockpit.
+duplex, and cuts into **93 × 175 mm** double-sided slips. Sized for the
+[Design4Pilot KB-1 mini](https://www.design4pilots.de/) kneeboard: a cut slip
+clears the clamp at the top and the clear foil's seam at the bottom, so it slides
+right under the foil, and the spare ones stow there too and do not flap around
+in a draughty cockpit.
 
 ![One slip](docs/preview-slip.png)
 
-The form is designed around one awkward fact about small kneeboards: **the clamp
-covers the top ~16 mm of the sheet.** So the top strip carries only
-identification you fill in on the ground and glance at later, and everything you
+The form is designed around two awkward facts about small kneeboards.
+
+**The clamp's wire handle lies flat on the sheet, and it is a loop, not a bar.**
+An upper bar along the top edge, a lower bar 15.5–20 mm down, and two side rails
+joining them at roughly 14–20 mm and 77–81 mm from the left edge. So the header
+is laid out *around* it rather than under it:
+
+```
+    0 ┌──────┬────────────────────────────────┬──────┐
+      │ A/C  │  FROM [    ] RWY [ ]           │ DATE │   the strips outside
+      │ [  ] │  TO   [    ] RWY [ ]           │ [  ] │   the rails are clear
+   15 ├──────┼────────────────────────────────┼──────┤   of the handle; the
+   20 │      └────────────────────────────────┘ ▲TOP │   middle shows through
+   21 ├───────────────────────────────────────────---┤   its open window
+      │  T/O [        ]   LDG [        ]             │   first write-on block
+```
+
+Nothing is hidden. The blank strip is where the lower bar lands, and the `▲ TOP`
+mark tucks into its right-hand corner, past the rail.
+
+**The usable height is fixed by the clamp above and the foil seam below.**
+175 mm is what fits, with a millimetre to spare for the cut. Everything you
 actually write in the air — take-off and landing times, QNH, the ATIS letter —
-starts below it.
+starts at 21 mm, clear of the handle entirely.
+
+## Two variants
+
+The blocks above the nav table are identical in both, and so is the table's
+overall height. They differ only in how that height is divided:
+
+| variant | legs | data row | for |
+|---|---|---|---|
+| [`7L`](build/NavLog-A4-3up-7L.pdf) | 7 legs, 8 waypoints | 5.6 mm | longer routes, neater handwriting |
+| [`6L`](build/NavLog-A4-3up-6L.pdf) | 6 legs, 7 waypoints | 6.6 mm | fewer, larger cells — easier in turbulence |
+
+Each slip says which one it is, faintly, next to the `▲ TOP` mark. Print both and
+fly them before deciding.
 
 ## Print it
 
-Grab [`build/NavLog-A4-3up.pdf`](build/NavLog-A4-3up.pdf) and print with:
+Grab a PDF from the table above and print with:
 
 | setting | value |
 |---|---|
@@ -24,7 +57,7 @@ Grab [`build/NavLog-A4-3up.pdf`](build/NavLog-A4-3up.pdf) and print with:
 | orientation | landscape |
 | scale | **100 % / actual size** — *not* "fit to page" or "shrink to fit" |
 | duplex | two-sided, **flip on short edge** |
-| margins | none / minimum (the PDF already has 12.5 × 5 mm) |
+| margins | none / minimum (the PDF already has 17.5 × 5 mm) |
 
 Scaling is the one that bites: at "fit to page" the slips come out a few
 millimetres narrow and stop matching the clamp.
@@ -32,9 +65,13 @@ millimetres narrow and stop matching the clamp.
 **Check the flip before you cut.** Every slip prints a faint `▲ TOP` in its top
 right corner. Hold a printed sheet up to the light — the `▲ TOP` marks on both
 sides must be at the *same* end. If the back is upside down, either switch the
-duplex option to the other edge, or print
-[`build/NavLog-A4-3up-longedge.pdf`](build/NavLog-A4-3up-longedge.pdf), which is
-the same document with the back page pre-rotated.
+duplex option to the other edge, or print the `-longedge` PDF next to it, which
+is the same document with the back page pre-rotated.
+
+Expect the front and back to be a millimetre out of register vertically anyway:
+that is the printer's duplex feed, not the layout, and no page geometry fixes it.
+Cut on the lines of whichever side you can see, and keep the frame's 0.25 mm
+width as your slack.
 
 ## Cut it
 
@@ -49,10 +86,11 @@ double-sided nav logs, or one out-and-back per slip.
 ## The form
 
 ```
-┌──────────────────────────────────────────┐  ─┐
-│  FROM [    ] RWY [  ]  TO [    ] RWY [ ] │   │ clamp zone —
-│  DATE ______  A/C ______        ▲ TOP    │   │ ground info only
-│                                          │  ─┘
+┌──────┬───────────────────────────┬───────┐  ─┐  0 mm
+│ A/C  │ FROM [      ] RWY [    ]  │ DATE  │   │ clamp zone —
+│ [  ] │ TO   [      ] RWY [    ]  │ [   ] │   │ ground info only
+│      └───────────────────────────┘▲TOP 7L│   │
+│      (blank: the wire's lower bar)       │  ─┘  21 mm
 ├──────────────────────────────────────────┤
 │  T/O [        ]   LDG [        ]         │  first block clear
 │  QNH/INFO  DEP Q [  ] ◯   DEST Q [  ] ◯  │  of the clamp
@@ -67,16 +105,16 @@ double-sided nav logs, or one out-and-back per slip.
 │    │ MIN │   │ MH │DIST│TOT │ ACT │ ATO  │
 ├────┴─────┴───┴────┴────┴────┴─────┴──────┤
 │  waypoint / notes              │ W/V     │
-│  ..  7 of these, each over two data rows │
+│  .. 7 or 6 of these, over two data rows  │
 ├──────────────────────────────────────────┤
 │  waypoint                      │ W/V     │  destination:
-└──────────────────────────────────────────┘  no leg data
+└──────────────────────────────────────────┘  no leg data   175 mm
 ```
 
 | field | what goes in it |
 |---|---|
-| `FROM` / `TO` / `RWY` | departure and destination, with the runway pair |
-| `DATE` / `A/C` | for filing the slip after the flight |
+| `FROM` / `TO` / `RWY` | departure and destination, each with its runway. Centred in the clamp handle's open window |
+| `A/C` / `DATE` | for filing the slip after the flight. Out at the edges, where no part of the handle reaches |
 | `T/O` / `LDG` | actual times, written in the cockpit |
 | `QNH  Q [ ]` | last two digits — the leading ones are obvious in context |
 | `◯` | the ATIS information letter, circled |
@@ -96,9 +134,9 @@ double-sided nav logs, or one out-and-back per slip.
 
 The figures under a waypoint describe the leg **leaving** it, so the last
 waypoint needs no data cells — the form ends with a bare name row. That gives
-**seven legs and eight waypoints** per slip. Typical cross-country routes use
-four to six, so there is room to spare without wasting a whole slip on blank
-grid.
+**seven legs and eight waypoints** on `7L`, six and seven on `6L`. Typical
+cross-country routes use four to six, so either has room to spare without
+wasting a whole slip on blank grid.
 
 ## Customise it
 
@@ -112,16 +150,25 @@ line.
 A few you might want:
 
 ```css
---slip-h: 185mm;     /* 177mm matches the original spreadsheet version */
---h-clamp: 18mm;     /* grow this if your kneeboard's clamp reaches further */
---h-freq-min: 20mm;  /* floor for the free-text block, not its actual height */
---c-eto: 16mm;       /* the eight column widths must add up to --slip-w */
+--slip-h: 175mm;      /* what fits the KB-1 mini between clamp and foil seam */
+--h-clamp: 21mm;      /* below the wire handle's lower bar */
+--w-clamp-side: 10.5mm; /* the A/C and DATE strips, outside the side rails */
+--w-wire-gap: 8mm;    /* the gaps the side rails sit in */
+--h-freq-min: 20mm;   /* floor for the free-text block, not its actual height */
+--c-eto: 16mm;        /* the eight column widths must add up to --slip-w */
 ```
 
-Waypoint count lives in `WAYPOINTS` in [`tools/build.py`](tools/build.py). Raise
-it and the free-text block shrinks to compensate; raise it past what fits and
-the block hits its floor and `make check` fails, rather than the grid quietly
-sliding off the paper.
+The four clamp dimensions are hardware, not taste — they are traced from where
+the wire handle actually lies. Measure your own board, put the numbers in the
+`WIRE_*` block in [`tools/check.py`](tools/check.py), and `make check` will tell
+you which part of the header now fouls which part of the handle, in millimetres,
+until the CSS agrees.
+
+Leg count and row heights live in the `VARIANTS` tuple in
+[`tools/build.py`](tools/build.py) — add or edit one and it builds its own pair
+of PDFs. Ask for more legs and the free-text block shrinks to compensate; ask
+for more than fits and the block hits its floor and `make check` fails, rather
+than the grid quietly sliding off the paper.
 
 If you change a column width, run `make check` — it will tell you if the columns
 no longer add up and the grid has drifted off the cut line.
@@ -132,24 +179,26 @@ Needs Python and [WeasyPrint](https://weasyprint.org/).
 
 ```sh
 pip install weasyprint pypdf
-make          # -> build/navlog.html and both PDFs
+make          # -> build/navlog-*.html and four PDFs
 make check    # assert the geometry still matches this README
 make preview  # regenerate docs/preview-*.png
 ```
 
 `src/slip.html` is the single source of truth for the form — one slip, with the
 waypoint block written once. `tools/build.py` stamps it out three times per
-page, two pages, and inlines the CSS into `build/navlog.html`. That generated
-file is self-contained, so you can also just open it in a browser and print from
-there; the result is close, though a browser's own margin handling makes the PDF
-the more reliable route.
+page, two pages, once per variant, and inlines the CSS into
+`build/navlog-<tag>.html`. That generated file is self-contained, so you can also
+just open it in a browser and print from there; the result is close, though a
+browser's own margin handling makes the PDF the more reliable route.
 
-`make check` asserts what this README promises: two A4 landscape pages, three
-93 × 185 mm slips each, 97 mm pitch, symmetric margins, nothing overhanging a
-cut line, seven legs and eight waypoint rows per slip, and the table ending
-flush with the bottom cut line. Paper forms fail quietly — a column
-2 mm too wide still renders, it just stops lining up — so the numbers are pinned
-in code rather than in prose alone.
+`make check` asserts, for every variant, what this README promises: two A4
+landscape pages, three 93 × 175 mm slips each, 97 mm pitch, symmetric margins,
+nothing overhanging a cut line, no label or box in the clamp zone touching any
+of the four strips the wire handle covers, the first write-on block starting
+below it, the right number of legs and waypoint rows, and the table ending flush
+with the bottom cut line. Paper forms
+fail quietly — a column 2 mm too wide still renders, it just stops lining up —
+so the numbers are pinned in code rather than in prose alone.
 
 ## What changed from the spreadsheet version
 
@@ -157,7 +206,14 @@ The original was an `.xlsx` ([`legacy/NavLog.xlsx`](legacy/NavLog.xlsx), kept
 for reference). Changes in this version, all driven by what actually got
 scribbled into the margins of real flights:
 
-- **Clamp zone.** T/O, LDG and the frequencies moved out from under the clamp.
+- **Clamp zone.** T/O, LDG and the frequencies moved out from under the clamp,
+  and then the header was rebuilt around the wire handle rather than beneath it:
+  `FROM` / `TO` / `RWY` stacked into the loop's open window, `A/C` and `DATE` out
+  in the clear strips beside the side rails. Nothing is hidden any more.
+- **`A/C` and `DATE`** became boxes instead of ruled lines, being narrow columns
+  now rather than a full-width row.
+- **Height.** 175 mm rather than the sheet's full reach, so a cut slip passes
+  under the kneeboard's clear foil instead of standing 9 mm proud of its seam.
 - **QNH and the ATIS letter** got printed fields instead of being squeezed into
   the blank area.
 - **Runways** got boxes next to `FROM` / `TO` instead of being crammed in after
@@ -174,8 +230,8 @@ scribbled into the margins of real flights:
   `WAYPOINT:` at row 33 — deliberately, since the figures under a waypoint
   describe the leg leaving it and nothing leaves the last one. An early draft of
   this version mistook that for a page-break accident and dropped it, which cost
-  a whole three-row block to write one airfield name. Seven legs, eight
-  waypoints, as before.
+  a whole three-row block to write one airfield name. Seven legs and eight
+  waypoints, as before, on the `7L` variant.
 - Plain-text source: the layout is now diffable and builds reproducibly, instead
   of depending on how Excel or LibreOffice feels about rendering the sheet.
 

@@ -4,24 +4,26 @@
 PYTHON ?= python3
 
 BUILD  := build
-PDF    := $(BUILD)/NavLog-A4-3up.pdf
-HTML   := $(BUILD)/navlog.html
+# Two variants, same outer size: 7L is seven legs with tighter rows, 6L is six
+# legs with roomier ones. Stamped on the sheet next to the ▲ TOP mark.
+TAGS   := 7L 6L
+PDFS   := $(foreach t,$(TAGS),$(BUILD)/NavLog-A4-3up-$(t).pdf)
 SRC    := src/slip.html src/navlog.css tools/build.py
 
 .PHONY: all check preview clean
 
-all: $(PDF)
+all: $(PDFS)
 
-$(PDF): $(SRC)
+$(PDFS): $(SRC)
 	@$(PYTHON) tools/build.py
 
 ## check: assert the printed geometry matches what the README promises
-check: $(PDF)
+check: $(PDFS)
 	@$(PYTHON) tools/check.py
 
 ## preview: regenerate the PNG shown in the README
-preview: $(PDF)
+preview: $(PDFS)
 	@tools/preview.sh
 
 clean:
-	@rm -f $(BUILD)/navlog.html $(BUILD)/*.pdf
+	@rm -f $(BUILD)/navlog*.html $(BUILD)/*.pdf
