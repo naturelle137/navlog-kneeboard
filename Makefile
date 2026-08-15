@@ -1,6 +1,5 @@
 # VFR nav log kneeboard template
-# SPDX-FileCopyrightText: Carsten Ritter
-# SPDX-License-Identifier: CC-BY-SA-4.0
+# SPDX-License-Identifier: CC0-1.0
 
 PYTHON ?= python3
 

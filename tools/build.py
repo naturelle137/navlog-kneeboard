@@ -9,8 +9,7 @@ Emits, into build/:
   NavLog-A4-3up-longedge.pdf   same, back page pre-rotated 180 degrees, for
                                printers whose duplex option is the other way
 
-SPDX-FileCopyrightText: Carsten Ritter
-SPDX-License-Identifier: CC-BY-SA-4.0
+SPDX-License-Identifier: CC0-1.0
 """
 
 from __future__ import annotations

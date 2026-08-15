@@ -1,7 +1,6 @@
 /*
  * VFR nav log — kneeboard slip, 3-up on landscape A4.
- * SPDX-FileCopyrightText: Carsten Ritter
- * SPDX-License-Identifier: CC-BY-SA-4.0
+ * SPDX-License-Identifier: CC0-1.0
  *
  * All geometry lives in the :root block below. Everything else is derived
  * from it, so retuning the form is a matter of changing numbers here and

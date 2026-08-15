@@ -189,15 +189,19 @@ better — please [open an issue](../../issues) or a pull request here on GitHub
 
 ## Licence
 
-[![CC BY-SA 4.0](https://img.shields.io/badge/License-CC%20BY--SA%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+[![CC0 1.0](https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
 
-© Carsten Ritter. Licensed under [Creative Commons Attribution-ShareAlike 4.0
-International](https://creativecommons.org/licenses/by-sa/4.0/). Use it, print
-it, change it, publish your changes — just keep the same licence and credit the
-original:
+Everything here — the form, the build tools, the PDFs — is released into the
+public domain under [CC0 1.0
+Universal](https://creativecommons.org/publicdomain/zero/1.0/). No copyright, no
+attribution, no conditions. Print it, sell it, change it, fold it into something
+else, relicense it, claim it as your own. You owe nobody anything.
 
-> *VFR Nav Log — Kneeboard Template* by Carsten Ritter, licensed under
-> [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+Where a jurisdiction does not allow copyright to be surrendered — Germany, for
+one — CC0 falls back to an unconditional, irrevocable, royalty-free licence to
+do all of the above for the full term of the rights (§3, *Public License
+Fallback*), so the practical effect is the same everywhere. Note that CC0 does
+not touch trademark or patent rights (§4a), and comes with no warranty.
 
 Full text in [`LICENSE`](LICENSE).
 
